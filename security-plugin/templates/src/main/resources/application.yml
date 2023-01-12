@@ -1,0 +1,4 @@
+api:
+  security:
+    token:
+      secret: ${JWT_SECRET:{{jwt_secret_pass}}}

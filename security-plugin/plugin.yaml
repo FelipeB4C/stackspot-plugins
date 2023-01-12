@@ -1,0 +1,96 @@
+name: security-plugin
+description: This plugin adds functionalities to login and another securities.
+display-name: Security
+picture: plugin.png
+category: backend
+compatibility:
+  - java
+  - spring
+about: docs/about.md
+usage: docs/usage.md
+use-case: docs/use-case.md
+implementation: docs/implementation.md
+technologies:
+  - "Api"
+types:
+  - app
+inputs:
+  - label: Enter the base package for the project
+    type: text
+    name: project_group_id
+    pattern: '(^[a-zA-Z_\d.]*)'
+    default: br.com.myproject
+    global: true
+  - label: Select the project build tool
+    type: text
+    items:
+      - Maven
+      - Gradle
+    default: Maven
+    name: build_tool
+    global: true
+
+  - label: Enter the jwt secret
+    type: text
+    name: jwt_secret
+    pattern: '(^[a-zA-Z_\d.]*)'
+    default: mysecretjwt
+    name: jwt_secret_pass
+    global: true
+
+global-computed-inputs:
+  "jwt_secret": "{{jwt_secret_pass}}"
+  "base_package": "{{project_group_id}}"
+  "package_dir": "{{global_computed_inputs.base_package|replace('.','/')}}"
+
+hooks:
+  - type: edit
+    trigger: after-render
+    path: build.gradle
+    changes:
+      - search:
+          string: "dependencies {"
+          insert-after:
+            snippet: snippets/security-dependencies-gradle.txt
+          when:
+            not-exists-snippet: snippets/security-dependencies-maven.xml
+    condition:
+      variable: build_tool
+      operator: ==
+      value: Gradle
+
+ # - type: edit-xml
+ #   trigger: after-render
+ #   path: pom.xml
+ #   changes:
+ #     - xpath: "dependencies/dependency[artifactId='opentracing-spring-jaeger-starter']"
+ #       clear: true
+ #   condition:
+ #     variable: build_tool
+ #     operator: ==
+ #     value: Maven
+
+#  - type: edit
+#    trigger: after-render
+#    path: pom.xml
+#    changes:
+#      - search:
+#          string: "<dependency />"
+#         replace-by:
+#            value: " "
+#    condition:
+#      variable: build_tool
+#      operator: ==
+#      value: Maven
+      
+  - type: edit-xml
+    trigger: after-render
+    path: pom.xml
+    changes:
+      - xpath: "dependencies"
+        append:
+          snippet: snippets/security-dependencies-maven.xml
+    condition:
+      variable: build_tool
+      operator: ==
+      value: Maven

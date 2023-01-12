@@ -1,0 +1,28 @@
+name: exception-plugin
+description: Create exceptions classes
+display-name: exception-plugin
+picture: plugin.png
+category: backend # Ref: https://docs.stackspot.com/docs/create-stacks/yaml-files/plugin/#category
+compatibility:
+  - java
+  - spring
+about: docs/about.md
+usage: docs/usage.md
+use-case: docs/use-case.md
+implementation: docs/implementation.md
+technologies: # Ref: https://docs.stackspot.com/docs/create-stacks/yaml-files/yaml/#technologies
+  - "Api"
+types:
+  - app
+inputs:
+  - label: Enter the base package for the project
+    type: text
+    name: project_group_id
+    pattern: '(^[a-zA-Z_\d.]*)'
+    default: br.com.myproject
+    global: true
+
+
+global-computed-inputs:
+  "base_package": "{{project_group_id}}"
+  "package_dir": "{{global_computed_inputs.base_package|replace('.','/')}}"
